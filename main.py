@@ -15,7 +15,7 @@ blog_id = 7302333189972766248
 
 
 #htmlcont =  module.genCont()
-htmlcont = open('/home/TeekaYX/PAuto/file.html','r+')
+htmlcont = open('./file.html','r+')
 soup = BeautifulSoup(htmlcont, 'html.parser')
 post_title = soup.title.text
 Labls = module.genLabels(post_title=post_title)

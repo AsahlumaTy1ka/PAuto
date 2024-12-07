@@ -27,7 +27,7 @@ def generate_image(post_title,guidance_scale=4, height=512, width=512, max_seque
     Returns:
         dict: The JSON response from the API.
     """
-    output_path = '/workspaces/python/PAuto10/banners/'+str(''.join(random.choices(string.ascii_letters,k=7)))+ '.jpg'
+    output_path = './banners/'+str(''.join(random.choices(string.ascii_letters,k=7)))+ '.jpg'
     token = os.getenv("AI_AKEY")
     prompt = f"A blog post banner with title '{post_title}'"
     url = "https://www.mystic.ai/v4/runs"
