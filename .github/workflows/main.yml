@@ -25,7 +25,7 @@ jobs:
 
       - name: Run the script
         env:
-          API_TOKEN: ${{ secrets.API_KEY }}
+          API_KEY: ${{ secrets.API_KEY }}
           AI_AKEY: ${{ secrets.AI_AKEY }}
           # Add other environment variables if needed
         run: |
