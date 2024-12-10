@@ -1,10 +1,8 @@
 import google.generativeai as genai
-from dotenv import load_dotenv
 import os
 import string 
 import random
 import requests
-load_dotenv()
 myk = os.getenv('API_KEY')
 genai.configure(api_key=myk)
 
