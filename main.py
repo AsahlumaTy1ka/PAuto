@@ -1,9 +1,6 @@
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
-from google.auth.transport.requests import Request
+from google.oauth2 import service_account
 import os
-import json
 import requests
 from bs4 import BeautifulSoup
 from imports import module
@@ -46,47 +43,16 @@ def postCont(blog_id, title, content, schedule_post=False, schedule_time=None):
 
 def authenticate():
     """Authenticates the user and returns API credentials."""
-    creds = None
     
-    # Check if token.json exists
-    if os.path.exists('token.json'):
-        try:
-            # Load credentials from token.json
-            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
-        except (json.JSONDecodeError, ValueError):
-            print("token.json is corrupted or invalid. Regenerating credentials...")
-    
-    # If no valid credentials, run the OAuth flow
-    if not creds or not creds.valid:
-        try:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'creds.json',
-                scopes=SCOPES
-            )
-            # Set redirect URI
-            flow.redirect_uri = "https://41487-codeanywhere-templates-p-2vyedc00ad.app.codeanywhere.com/oauth2callback"
-            
-            # Generate the authorization URL
-            auth_url, _ = flow.authorization_url(
-                access_type='offline', prompt='consent'
-            )
-            print('Please go to this URL to authorize the app: {}'.format(auth_url))
-            
-            # Manually fetch the authorization code
-            code = input('Enter the authorization code: ')
-            
-            # Exchange the authorization code for tokens
-            flow.fetch_token(code=code)
-            creds = flow.credentials
+    # Load service account credentials from the environment
+    creds_path = "service_account.json"
 
-            # Save credentials to token.json
-            with open('token.json', 'w') as token:
-                token.write(creds.to_json())
-        except Exception as e:
-            print(f"Error during authentication: {e}")
-            return None
-        if creds and creds.expired and creds.refresh_token:
-            creds.refresh(Request())
+    # Write JSON from GitHub Secrets to a temporary file
+    with open(creds_path, "w") as f:
+        f.write(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
+
+    # Authenticate with the service account
+    creds = service_account.Credentials.from_service_account_file(creds_path)
     
     return creds
 
