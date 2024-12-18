@@ -49,7 +49,9 @@ def authenticate():
     creds_path = "service_account.json"
 
     # Write JSON from GitHub Secrets to a temporary file
-    with open(creds_path, "w") as f:
+    
+    with open(creds_path, "w+") as f:
+        print(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
         f.write(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
 
     # Authenticate with the service account
