@@ -1,12 +1,13 @@
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import os
+from dotenv import load_dotenv()
 import requests
 from bs4 import BeautifulSoup
 from imports import module
 
 blog_id = 7302333189972766248
-
+load_dotenv()
 
 
 
