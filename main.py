@@ -1,7 +1,7 @@
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import os
-from dotenv import load_dotenv()
+from dotenv import load_dotenv
 import requests
 from bs4 import BeautifulSoup
 from imports import module
