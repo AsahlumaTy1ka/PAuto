@@ -44,19 +44,25 @@ def postCont(blog_id, title, content, schedule_post=False, schedule_time=None):
 
 def authenticate():
     """Authenticates the user and returns API credentials."""
-    
-    # Load service account credentials from the environment
     creds_path = "service_account.json"
+    credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
 
-    # Write JSON from GitHub Secrets to a temporary file
-    
-    with open(creds_path, "w+") as f:
-        print(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
-        f.write(os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON"))
+    if not credentials_json:
+        raise ValueError("Environment variable 'GOOGLE_APPLICATION_CREDENTIALS_JSON' is not set or empty.")
 
-    # Authenticate with the service account
-    creds = service_account.Credentials.from_service_account_file(creds_path)
-    
+    try:
+        # Write JSON from the environment variable to a temporary file
+        with open(creds_path, "w") as f:
+            f.write(credentials_json)
+
+        # Load credentials from the file
+        creds = service_account.Credentials.from_service_account_file(creds_path)
+
+    finally:
+        # Clean up the temporary file
+        if os.path.exists(creds_path):
+            os.remove(creds_path)
+
     return creds
 
 
