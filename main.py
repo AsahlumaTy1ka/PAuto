@@ -46,6 +46,7 @@ def authenticate():
     """Authenticates the user and returns API credentials."""
     creds_path = "service_account.json"
     credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
+    print('Google credds json : '+credentials_json)
 
     if not credentials_json:
         raise ValueError("Environment variable 'GOOGLE_APPLICATION_CREDENTIALS_JSON' is not set or empty.")

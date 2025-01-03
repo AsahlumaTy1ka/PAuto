@@ -29,6 +29,7 @@ def generate_image(post_title,guidance_scale=4, height=512, width=512, max_seque
     """
     output_path = './banners/'+str(''.join(random.choices(string.ascii_letters,k=7)))+ '.jpg'
     token = os.getenv("AI_AKEY")
+    print('AI_KEY : '+ token)
     prompt = f"A blog post banner with title '{post_title}'"
     url = "https://www.mystic.ai/v4/runs"
     headers = {

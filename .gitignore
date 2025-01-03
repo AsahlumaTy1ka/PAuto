@@ -1,0 +1,27 @@
+# Ignore service account credentials
+service_account.json
+
+# Ignore environment files
+.env
+
+# Python-related ignores
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore virtual environments
+venv/
+env/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore logs
+*.log
+*.out
+*.err
+
+# Ignore GitHub Codespaces-specific files
+*.code-workspace
+.vscode/
