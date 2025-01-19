@@ -19,7 +19,8 @@ htmlcont = open('./file.html','r+')
 soup = BeautifulSoup(htmlcont, 'html.parser')
 post_title = soup.title.text
 Labls = module.genLabels(post_title=post_title)
-bannerPath = module.generate_image(post_title=post_title)
+bannerPath = ""
+#bannerPath = module.generate_image(post_title=post_title)
 newTag = soup.new_tag('img',attrs={
     "src":bannerPath,
     "alt": post_title
