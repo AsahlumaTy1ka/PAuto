@@ -1,6 +1,8 @@
 from googleapiclient.discovery import build
-from google.oauth2 import service_account
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
 import os
+import pickle
 from dotenv import load_dotenv
 import requests
 from bs4 import BeautifulSoup
@@ -41,30 +43,30 @@ def postCont(blog_id, title, content, schedule_post=False, schedule_time=None):
         schedule_time (str): Time to post if scheduling, in HH:MM (24-hour) format. Default is None.
     """
 
-
 def authenticate():
-    """Authenticates the user and returns API credentials."""
-    creds_path = "service_account.json"
-    credentials_json = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_JSON")
-    print('Google credds json : '+credentials_json)
+    SCOPES = ['https://www.googleapis.com/auth/blogger']
+    creds = None
 
-    if not credentials_json:
-        raise ValueError("Environment variable 'GOOGLE_APPLICATION_CREDENTIALS_JSON' is not set or empty.")
+    # Check if token exists
+    if os.path.exists('token.pickle'):
+        with open('token.pickle', 'rb') as token_file:
+            creds = pickle.load(token_file)
 
-    try:
-        # Write JSON from the environment variable to a temporary file
-        with open(creds_path, "w") as f:
-            f.write(credentials_json)
+    # Authenticate if credentials are not valid
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'creds.json', SCOPES)
+            creds = flow.run_console()  # Use console-based authentication
 
-        # Load credentials from the file
-        creds = service_account.Credentials.from_service_account_file(creds_path)
-
-    finally:
-        # Clean up the temporary file
-        if os.path.exists(creds_path):
-            os.remove(creds_path)
-
-    return creds
+        # Save the credentials for reuse
+        with open('token.pickle', 'wb') as token_file:
+            pickle.dump(creds, token_file)
+    
+    return creds      
+            
 
 
 
@@ -91,8 +93,8 @@ post_body = post_body.replace('<body>', '')
 post_body = post_body.replace('</body>', '')
 
 print(f"Labels : {Labls}")
-print(f"Banner Path : {bannerPath}")
-print(f"POst body :{post_body}")
+#print(f"Banner Path : {bannerPath}")
+#print(f"POst body :{post_body}")
 create_post(service, blog_id, post_title, post_body,Labls)
 
 
