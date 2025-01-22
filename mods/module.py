@@ -6,7 +6,7 @@ import random
 import requests
 load_dotenv()
 myk = os.getenv('API_KEY')
-genai.configure(api_key=myk)
+genai.configure(api_key='AIzaSyAMd-EzTIfn7rh0juAwBFJk3LR6pYOUA6E')
 
 # Generate an image
 def generate_image(post_title,guidance_scale=4, height=512, width=512, max_sequence_length=256, num_images=1, num_inference_steps=15, seed=1):

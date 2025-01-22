@@ -3,13 +3,12 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import os
 import pickle
-from dotenv import load_dotenv
-import requests
+import json
 from bs4 import BeautifulSoup
-from imports import module
+from httplib2 import Credentials
+from mods import module
 
 blog_id = 7302333189972766248
-load_dotenv()
 
 
 
@@ -60,13 +59,29 @@ def authenticate():
         else:
             flow = InstalledAppFlow.from_client_secrets_file(
                 'creds.json', SCOPES)
-            creds = flow.run_console()  # Use console-based authentication
+            auth_url, _ = flow.authorization_url(prompt='consent')
+            print(f"Please go to this URL: {auth_url}")
+
+            auth_code = input("Enter the authorization code: ")
+            creds = flow.fetch_token(code=auth_code, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
+
+            #creds = flow.run_local_server(port=8080)  # Use console-based authentication
 
         # Save the credentials for reuse
         with open('token.pickle', 'wb') as token_file:
             pickle.dump(creds, token_file)
     
-    return creds      
+    return creds 
+
+def get_service():
+    """Load credentials from JSON file and return the Blogger API service."""
+    with open('token.json', 'r') as token_file:
+        token_data = json.load(token_file)
+        creds = Credentials.from_authorized_user_info(token_data)
+
+    # Build the Blogger API service using credentials
+    service = build('blogger', 'v3', credentials=creds)
+    return service     
             
 
 
