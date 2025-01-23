@@ -1,11 +1,12 @@
 from googleapiclient.discovery import build
+from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 import os
 import pickle
 import json
 from bs4 import BeautifulSoup
-from httplib2 import Credentials
+from google.auth import credentials
 from mods import module
 
 blog_id = 7302333189972766248
@@ -44,44 +45,51 @@ def postCont(blog_id, title, content, schedule_post=False, schedule_time=None):
     """
 
 def authenticate():
-    SCOPES = ['https://www.googleapis.com/auth/blogger']
+    """Authenticates the user and returns API credentials."""
     creds = None
-
-    # Check if token exists
-    if os.path.exists('token.pickle'):
-        with open('token.pickle', 'rb') as token_file:
-            creds = pickle.load(token_file)
-
-    # Authenticate if credentials are not valid
+    
+    # Check if token.json exists
+    if os.path.exists('token.json'):
+        try:
+            # Load credentials from token.json
+            creds = Credentials.from_authorized_user_file('token.json', SCOPES)
+        except (json.JSONDecodeError, ValueError):
+            print("token.json is corrupted or invalid. Regenerating credentials...")
+    
+    # If no valid credentials, run the OAuth flow
     if not creds or not creds.valid:
+        try:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                'creds.json',
+                scopes=SCOPES
+            )
+            # Set redirect URI
+            flow.redirect_uri = "https://ideal-succotash-7gg7vg9jr5gcrjpr.github.dev/oauth2callback"
+            
+            # Generate the authorization URL
+            auth_url, _ = flow.authorization_url(
+                access_type='offline', prompt='consent'
+            )
+            print('Please go to this URL to authorize the app: {}'.format(auth_url))
+            
+            # Manually fetch the authorization code
+            code = input('Enter the authorization code: ')
+            
+            # Exchange the authorization code for tokens
+            flow.fetch_token(code=code)
+            creds = flow.credentials
+            # Save credentials to token.json
+            with open('token.json', 'w') as token:
+                token.write(creds.to_json())
+        except Exception as e:
+            print(f"Error during authentication: {e}")
+            return None
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
-        else:
-            flow = InstalledAppFlow.from_client_secrets_file(
-                'creds.json', SCOPES)
-            auth_url, _ = flow.authorization_url(prompt='consent')
-            print(f"Please go to this URL: {auth_url}")
-
-            auth_code = input("Enter the authorization code: ")
-            creds = flow.fetch_token(code=auth_code, redirect_uri='urn:ietf:wg:oauth:2.0:oob')
-
-            #creds = flow.run_local_server(port=8080)  # Use console-based authentication
-
-        # Save the credentials for reuse
-        with open('token.pickle', 'wb') as token_file:
-            pickle.dump(creds, token_file)
     
-    return creds 
+    return creds
 
-def get_service():
-    """Load credentials from JSON file and return the Blogger API service."""
-    with open('token.json', 'r') as token_file:
-        token_data = json.load(token_file)
-        creds = Credentials.from_authorized_user_info(token_data)
-
-    # Build the Blogger API service using credentials
-    service = build('blogger', 'v3', credentials=creds)
-    return service     
+  
             
 
 
@@ -101,8 +109,9 @@ def create_post(service, blog_id, title, content,lbls):
 
 # Authenticate and build the Blogger service
 crds = authenticate()
-print(f"crds {crds}")
+#print(f"crds {crds}")
 service = build('blogger', 'v3', credentials=crds)
+#service = get_service()
 # Post immediately
 post_body = str(soup.body)
 post_body = post_body.replace('<body>', '')
