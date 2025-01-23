@@ -14,8 +14,8 @@ blog_id = 7302333189972766248
 
 
 
-#htmlcont =  module.genCont()
-htmlcont = open('./file.html','r+')
+htmlcont =  module.genCont()
+#htmlcont = open('./file.html','r+')
 soup = BeautifulSoup(htmlcont, 'html.parser')
 post_title = soup.title.text
 Labls = module.genLabels(post_title=post_title)
@@ -91,7 +91,34 @@ def authenticate():
 
   
             
+def get_authenticated_service():
+  """
+  Gets authenticated service using refresh token.
 
+  Returns:
+    The authenticated Blogger API service object.
+  """
+  try:
+    with open('token.json', 'r') as token_file:
+      creds_data = json.load(token_file)
+      creds = credentials.Credentials(**creds_data, scopes=SCOPES)
+
+    if not creds.valid:
+      if creds and creds.expired and creds.refresh_token:
+        creds.refresh(Request())
+      else:
+        raise Exception('Invalid credentials. Please re-authenticate.')
+
+    return build('blogger', 'v3', credentials=creds)
+
+  except FileNotFoundError:
+    print("Error: 'token.json' file not found.")
+    return None
+  except Exception as e:
+    print(f"An error occurred: {e}")
+    return None
+
+# Example usage:
 
 
 def create_post(service, blog_id, title, content,lbls):
@@ -110,8 +137,8 @@ def create_post(service, blog_id, title, content,lbls):
 # Authenticate and build the Blogger service
 crds = authenticate()
 #print(f"crds {crds}")
-service = build('blogger', 'v3', credentials=crds)
-#service = get_service()
+sevice = build('blogger', 'v3', credentials=crds)
+#sevice = get_authenticated_service()
 # Post immediately
 post_body = str(soup.body)
 post_body = post_body.replace('<body>', '')
@@ -120,6 +147,6 @@ post_body = post_body.replace('</body>', '')
 print(f"Labels : {Labls}")
 #print(f"Banner Path : {bannerPath}")
 #print(f"POst body :{post_body}")
-create_post(service, blog_id, post_title, post_body,Labls)
+create_post(sevice, blog_id, post_title, post_body,Labls)
 
 
