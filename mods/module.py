@@ -74,7 +74,46 @@ def generate_image(post_title,guidance_scale=4, height=512, width=512, max_seque
 
 def genCont():
     model = genai.GenerativeModel('gemini-1.5-flash')
-    prompt = '''Generate me a blog post about a random coding tutorial people or coders usually search about,in html format and make it as long as possible and do not take this as a chat plus dont put the html in a codeblock just return plain html and use <pre style="background: rgb(238, 238, 238); border-radius: 10px; border: 1px solid rgb(221, 221, 221); font-family: 'Courier New', Courier, monospace; padding: 12px;"></pre> as codeblocks instead of code tags'''
+    prompt = '''
+You’re a tech blogger using Beautiful Jekyll by deanatalli. Generate one fresh, original blog post in plain Markdown (no fenced code blocks), with these rules:
+
+1. Title  
+   - On the very first line, output only the post title (plain text, no commas/slashes/colons).
+
+2. Length & Markup  
+   - At least 1,500 words.  
+   - Use `{% highlight <language> linenos %}` … `{% endhighlight %}` for code.  
+   - Don’t wrap the whole thing in a code-block.
+
+3. Topic Selection (pick exactly one)  
+   - 🔲 **Emerging AI & ML** (new open-source models, fine-tuning, ethical implications)  
+   - 🔲 **JavaScript Frameworks** (React/Next.js tips, Svelte, real-world case studies)  
+   - 🔲 **Cloud & DevOps** (Kubernetes patterns, serverless best practices, CI/CD pipelines)  
+   - 🔲 **Mobile Development** (Flutter, React Native, PWA tricks)  
+   - 🔲 **Cybersecurity** (hands-on pentesting, DevSecOps, secure coding)  
+   - 🔲 **Data Science & Visualization** (Pandas alternatives, interactive dashboards)  
+   - 🔲 **IoT & Hardware Hacks** (Raspberry Pi, Arduino projects)  
+
+   _Only one in every three posts may be Python automation._  
+
+4. Structure  
+   - **Introduction**: Hook with a real problem or question.  
+   - **Sections**: Use `##`/`###` headings.  
+   - **Code Snippets**: Ready-to-copy with `{% highlight %}`.  
+   - **Internal Links**: When you refer to something you’ve covered on GTec, link to it (e.g. `[See our React hooks guide](https://gtec0.github.io/2025-04-20-hooks-react-guide/)`).  
+
+5. SEO & Engagement  
+   - Sprinkle 2–3 relevant keywords in headings/body.  
+   - Vary verbs: “Exploring,” “Building,” “Automating,” “Understanding.”  
+   - End with a **Conclusion + Call to Action**.
+
+6. Originality  
+   - Never repeat an existing GTec topic.  
+   - Bring fresh examples or data.
+
+Produce the Markdown output directly.  
+    '''
+    
     resp = model.generate_content(prompt)
     return resp.text
 
