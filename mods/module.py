@@ -75,42 +75,44 @@ def generate_image(post_title,guidance_scale=4, height=512, width=512, max_seque
 def genCont():
     model = genai.GenerativeModel('gemini-1.5-flash')
     prompt = '''
-You’re a tech blogger using Beautiful Jekyll by deanatalli. Generate one fresh, original blog post in plain Markdown (no fenced code blocks), with these rules:
+You’re a tech blogger using Beautiful Jekyll by deanatalli. Generate one original, 1100+-word tutorial post in plain Markdown (no fenced code blocks). Follow these rules:
 
 1. Title  
-   - On the very first line, output only the post title (plain text, no commas/slashes/colons).
+   - First line only: the post title, plain text, no commas/slashes/colons.
 
-2. Length & Markup  
-   - At least 1,500 words.  
-   - Use `{% highlight <language> linenos %}` … `{% endhighlight %}` for code.  
-   - Don’t wrap the whole thing in a code-block.
+2. Topic & Scope  
+   - Pick a single, clear problem and show how to solve it end-to-end.  
+   - Choose a domain not yet covered on GTEC (https://gtec0.github.io): e.g. containerizing apps with Docker & Kubernetes, securing a Node.js API, building a simple Go CLI, creating a Flutter widget, DevSecOps pipeline in GitHub Actions, or training a basic ML model in TensorFlow.  
+   - Python automation may appear at most once per three posts—don’t let it dominate.
 
-3. Topic Selection (pick exactly one)  
-   - 🔲 **Emerging AI & ML** (new open-source models, fine-tuning, ethical implications)  
-   - 🔲 **JavaScript Frameworks** (React/Next.js tips, Svelte, real-world case studies)  
-   - 🔲 **Cloud & DevOps** (Kubernetes patterns, serverless best practices, CI/CD pipelines)  
-   - 🔲 **Mobile Development** (Flutter, React Native, PWA tricks)  
-   - 🔲 **Cybersecurity** (hands-on pentesting, DevSecOps, secure coding)  
-   - 🔲 **Data Science & Visualization** (Pandas alternatives, interactive dashboards)  
-   - 🔲 **IoT & Hardware Hacks** (Raspberry Pi, Arduino projects)  
+3. Language & Tools Diversity  
+   - Use at least two different technologies or languages (e.g. Bash + JavaScript, Go + YAML, Flutter + Dart).  
+   - Mention Python only if it adds value, but primary examples should use the chosen languages.
 
-   _Only one in every three posts may be Python automation._  
+4. Structure & Formatting  
+   - Introduction (3–5 sentences): hook with a real-world scenario and state the goal.  
+   - Use `##` and `###` subheadings to break into logical sections.  
+   - Keep paragraphs to 3–5 sentences each.  
+   - Use bullet or numbered lists for step sequences or key points.  
+   - Insert image placeholders where diagrams/screenshots would help:  
+     `![alt text](path/to/image.png)`
 
-4. Structure  
-   - **Introduction**: Hook with a real problem or question.  
-   - **Sections**: Use `##`/`###` headings.  
-   - **Code Snippets**: Ready-to-copy with `{% highlight %}`.  
-   - **Internal Links**: When you refer to something you’ve covered on GTec, link to it (e.g. `[See our React hooks guide](https://gtec0.github.io/2025-04-20-hooks-react-guide/)`).  
+5. Code Snippets  
+   - Use `{% highlight <language> linenos %}` … `{% endhighlight %}` for every snippet.  
+   - Ensure each snippet is copy-and-paste ready and explained in the adjacent text.
 
-5. SEO & Engagement  
-   - Sprinkle 2–3 relevant keywords in headings/body.  
-   - Vary verbs: “Exploring,” “Building,” “Automating,” “Understanding.”  
-   - End with a **Conclusion + Call to Action**.
+6. SEO & Readability  
+   - Weave 2–3 relevant keywords naturally into headings and body (e.g. “Docker tutorial”, “Kubernetes deployment”, “DevSecOps pipeline”).  
+   - Vary your verbs—e.g. “Building,” “Exploring,” “Automating,” “Securing,” “Deploying.”
 
-6. Originality  
-   - Never repeat an existing GTec topic.  
-   - Bring fresh examples or data.
+7. Internal Linking  
+   - Add 1–2 links to related GTEC posts or the homepage.  
+     Example: `[See our Docker basics guide](https://gtec0.github.io/docker-basics/)`
 
+8. Conclusion & CTA  
+   - Summarize what the reader built or learned.  
+   - End with a call-to-action: invite comments, social follows, or linking to another GTEC tutorial.
+   
 Produce the Markdown output directly.  
     '''
     
